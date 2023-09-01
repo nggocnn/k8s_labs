@@ -1,4 +1,4 @@
-FROM node:18-alpine as builder
+FROM node:18-alpine as build-stage
 
 WORKDIR /frontend
 
@@ -17,12 +17,8 @@ ENV REACT_APP_API_URL=http://$BACKEND_SERVICE:$BACKEND_PORT
 RUN npm run build
 
 
-FROM nginx:1.19.0 as deployer
+FROM nginx:1.19.0 as deploy-stage
 
-WORKDIR /usr/share/nginx/html
-
-RUN rm -rf ./*
-
-COPY --from=builder /frontend/build .
+COPY --from=build-stage /frontend/build /usr/share/nginx/html
 
 CMD [ "nginx", "-g", "daemon off;"]

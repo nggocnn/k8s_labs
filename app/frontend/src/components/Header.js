@@ -1,11 +1,9 @@
-import * as React from 'react'
-
-// importing material UI components
+import React from 'react'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 
-export default function Header() {
+function Header() {
   return (
     <AppBar position="static">
       <Toolbar sx={{ textAlign: 'center' }}>
@@ -16,9 +14,11 @@ export default function Header() {
           component="div"
           sx={{ flexGrow: 1 }}
         >
-          `{process.env.REACT_APP_API_URL}`
+          Contacts Manager
         </Typography>
       </Toolbar>
     </AppBar>
   )
 }
+
+export default Header

@@ -1,13 +1,15 @@
 version: '3.8'
 services:
-  db:
+  database:
     image: nggocnn/database:v1
-    build: ./db
+    build: ./database
     env_file:
       - ./.env
     ports:
-      - $DB_PORT
+      - 3306:$MYSQL_PORT
     restart: always
+    networks:
+      - back-tier
 
   backend:
     image: nggocnn/backend:v1
@@ -17,8 +19,11 @@ services:
     ports:
       - 5000:$BACKEND_PORT
     depends_on:
-      - db
+      - database
     restart: on-failure
+    networks:
+      - back-tier
+      - front-tier
 
   frontend:
     image: nggocnn/frontend:v1
@@ -33,5 +38,11 @@ services:
       - $HOST_PORT:$FRONTEND_PORT
     restart: on-failure
     depends_on:
-      - db
+      - database
       - backend
+    networks:
+      - front-tier
+
+networks:
+  front-tier:
+  back-tier:
