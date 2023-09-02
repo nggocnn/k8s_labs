@@ -4,8 +4,6 @@ import './AddEdit.css'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 
-const api_url = process.env.REACT_APP_API_URL
-
 const initialState = {
   name: '',
   email: '',
@@ -22,9 +20,7 @@ const AddEdit = () => {
   const { id } = useParams()
 
   useEffect(() => {
-    axios
-      .get(`${api_url}/api/get/${id}`)
-      .then((resp) => setState({ ...resp.data[0] }))
+    axios.get(`/api/get/${id}`).then((resp) => setState({ ...resp.data }))
   }, [id])
 
   const handleSubmit = (e) => {
@@ -36,7 +32,7 @@ const AddEdit = () => {
     else {
       if (!id) {
         axios
-          .post(`${api_url}/api/post`, {
+          .post(`/api/post`, {
             name,
             email,
             contact,
@@ -50,7 +46,7 @@ const AddEdit = () => {
         })
       } else {
         axios
-          .put(`${api_url}/api/update/${id}`, {
+          .put(`/api/update/${id}`, {
             name,
             email,
             contact,

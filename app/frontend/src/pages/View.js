@@ -3,16 +3,12 @@ import { useParams, Link } from 'react-router-dom'
 import './View.css'
 import axios from 'axios'
 
-const api_url = process.env.REACT_APP_API_URL
-
 const View = () => {
   const [user, setUser] = useState({})
   const { id } = useParams()
 
   useEffect(() => {
-    axios
-      .get(`${api_url}/api/get/${id}`)
-      .then((resp) => setUser({ ...resp.data[0] }))
+    axios.get(`/api/get/${id}`).then((resp) => setUser({ ...resp.data }))
   }, [id])
 
   return (

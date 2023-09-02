@@ -8,12 +8,6 @@ RUN npm install
 
 COPY . .
 
-ARG BACKEND_SERVICE
-
-ARG BACKEND_PORT
-
-ENV REACT_APP_API_URL=http://$BACKEND_SERVICE:$BACKEND_PORT
-
 RUN npm run build
 
 

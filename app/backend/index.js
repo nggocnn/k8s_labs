@@ -1,27 +1,72 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const mysql = require('mysql2')
 const cors = require('cors')
+const { Sequelize, DataTypes } = require('sequelize')
 
 const app = express()
-const port = process.env.BACKEND_PORT || 3000
 
-const db = mysql.createConnection({
-  host: process.env.MYSQL_HOST,
+const port = process.env.BACKEND_PORT || 5000
+
+const readDatabases = JSON.parse(process.env.READ_DATABASES)
+const writeDatabase = JSON.parse(process.env.WRITE_DATABASE)
+
+const sequelize = new Sequelize(process.env.MYSQL_DATABASE, null, null, {
+  dialect: 'mysql',
   port: process.env.MYSQL_PORT,
-  database: process.env.MYSQL_DATABASE,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
+  replication: {
+    read: readDatabases.map((db) => ({
+      host: db.host,
+      username: db.username,
+      password: db.password,
+    })),
+    write: {
+      host: writeDatabase.host,
+      username: writeDatabase.username,
+      password: writeDatabase.password,
+    },
+  },
+  pool: {
+    max: parseInt(process.env.DB_POOL_MAX),
+    idle: parseInt(process.env.DB_POOL_IDLE),
+  },
 })
 
-db.connect((err) => {
-  if (err) {
-    console.log('Database Connection Failed !!!')
-    throw err
-  } else {
-    console.log('Connected to Database')
+const Contact = sequelize.define(
+  'Contact',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    contact: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    tableName: 'Contacts',
+    timestamps: false,
   }
-})
+)
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Connected to Database')
+  })
+  .catch((err) => {
+    console.log('Database Connection Failed !!!', err)
+    throw err
+  })
 
 app.use(cors())
 app.use(express.json())
@@ -37,9 +82,8 @@ app.use((err, req, res, next) => {
 
 app.get('/api/get', async (req, res, next) => {
   try {
-    const sqlGet = 'SELECT * FROM Contacts'
-    const [result] = await db.promise().query(sqlGet)
-    res.json(result)
+    const contacts = await Contact.findAll()
+    res.json(contacts)
   } catch (err) {
     next(err)
   }
@@ -48,8 +92,7 @@ app.get('/api/get', async (req, res, next) => {
 app.post('/api/post', async (req, res, next) => {
   try {
     const { name, email, contact } = req.body
-    const sqlInsert = 'INSERT INTO Contacts(name, email, contact) VALUES(?,?,?)'
-    await db.promise().query(sqlInsert, [name, email, contact])
+    await Contact.create({ name, email, contact })
     res.json({ success: true })
   } catch (err) {
     next(err)
@@ -59,8 +102,7 @@ app.post('/api/post', async (req, res, next) => {
 app.delete('/api/remove/:id', async (req, res, next) => {
   try {
     const { id } = req.params
-    const sqlRemove = 'DELETE FROM Contacts WHERE id=?'
-    await db.promise().query(sqlRemove, id)
+    await Contact.destroy({ where: { id } })
     res.json({ success: true })
   } catch (err) {
     next(err)
@@ -70,9 +112,8 @@ app.delete('/api/remove/:id', async (req, res, next) => {
 app.get('/api/get/:id', async (req, res, next) => {
   try {
     const { id } = req.params
-    const sqlGet = 'SELECT * FROM Contacts WHERE id = ?'
-    const [result] = await db.promise().query(sqlGet, id)
-    res.json(result)
+    const contact = await Contact.findByPk(id)
+    res.json(contact)
   } catch (err) {
     next(err)
   }
@@ -82,9 +123,7 @@ app.put('/api/update/:id', async (req, res, next) => {
   try {
     const { id } = req.params
     const { name, email, contact } = req.body
-    const sqlUpdate =
-      'UPDATE Contacts SET name=?, email=?, contact=? WHERE id=?'
-    await db.promise().query(sqlUpdate, [name, email, contact, id])
+    await Contact.update({ name, email, contact }, { where: { id } })
     res.json({ success: true })
   } catch (err) {
     next(err)

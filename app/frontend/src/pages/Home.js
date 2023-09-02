@@ -11,13 +11,11 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 
-const api_url = process.env.REACT_APP_API_URL
-
 const Home = () => {
   const [data, setData] = useState([])
 
   const loadData = async () => {
-    const response = await axios.get(`${api_url}/api/get`)
+    const response = await axios.get(`/api/get`)
     setData(response.data)
   }
 
@@ -27,7 +25,7 @@ const Home = () => {
 
   const deleteContact = (id) => {
     if (window.confirm('Are you sure you want to delete contact?')) {
-      axios.delete(`${api_url}/api/remove/${id}`)
+      axios.delete(`/api/remove/${id}`)
       toast.success('Contact Deleted Successfully', {
         position: toast.POSITION.TOP_CENTER,
       })
@@ -42,7 +40,6 @@ const Home = () => {
       </Link>
       <TableContainer component={Paper} className="styled-table">
         <Table aria-label="caption table">
-          <caption>`{api_url}`</caption>
           <TableHead>
             <TableRow>
               <TableCell align="center">No.</TableCell>
