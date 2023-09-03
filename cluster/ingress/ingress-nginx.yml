@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  namespace: default
+  annotations:
+    ingressClassName: nginx
+spec:
+  rules:
+    - host: contact.nggocnn.online
+      http:
+        paths:
+          - backend:
+              service:
+                name: frontend-cluster-ip
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix

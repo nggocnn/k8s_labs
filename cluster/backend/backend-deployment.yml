@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: nggocnn/backend:v2
+          env:
+            - name: MYSQL_PORT
+              value: '3306'
+            - name: MYSQL_DATABASE
+              value: 'contacts'
+            - name: BACKEND_PORT
+              value: '5000'
+            - name: DB_POOL_MAX
+              value: '20'
+            - name: DB_POOL_IDLE
+              value: '30000'
+            - name: READ_DATABASES
+              value: '[{"host": "mysql-database-primary.default.svc.cluster.local", "username": "root", "password": "9doDqEDLxu"}, {"host": "mysql-database-secondary.default.svc.cluster.local", "username": "root", "password": "9doDqEDLxu"}]'
+            - name: WRITE_DATABASE
+              value: '[{"host": "mysql-database-primary.default.svc.cluster.local", "username": "root", "password": "9doDqEDLxu"}]'
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '500m'
+            limits:
+              memory: '512Mi'
+              cpu: '1G'
+          ports:
+            - containerPort: 5000

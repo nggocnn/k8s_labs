@@ -1,0 +1,17 @@
+architecture: replication
+
+auth:
+  database: 'contacts'
+
+initdbScripts:
+  my_init_script.sql: |
+    USE contacts;
+    CREATE TABLE Contacts (
+      id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+      name VARCHAR(255) NOT NULL, 
+      email VARCHAR(255) NOT NULL, 
+      contact VARCHAR(255) NOT NULL
+    );
+
+secondary:
+  replicaCount: 2
