@@ -5,26 +5,28 @@ const { Sequelize, DataTypes } = require('sequelize')
 
 const app = express()
 
-const port = process.env.BACKEND_PORT || 5000
+const port = process.env.BACKEND_PORT
 
-const readDatabases = JSON.parse(process.env.READ_DATABASES)
-const writeDatabase = JSON.parse(process.env.WRITE_DATABASE)
-
-const sequelize = new Sequelize(process.env.MYSQL_DATABASE, null, null, {
+const sequelize = new Sequelize(process.env.APP_DATABASE, null, null, {
   dialect: 'mysql',
-  port: process.env.MYSQL_PORT,
+  port: process.env.DB_PORT,
   replication: {
     read: [
       {
-        host: 'database',
-        username: 'root',
-        password: 'password',
+        host: process.env.PRIMARY_DB_HOST,
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
+      },
+      {
+        host: process.env.SECONDARY_DB_HOST,
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
       },
     ],
     write: {
-      host: 'database',
-      username: 'root',
-      password: 'password',
+      host: process.env.PRIMARY_DB_HOST,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
     },
   },
   pool: {

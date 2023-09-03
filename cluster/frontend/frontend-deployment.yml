@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: nggocnn/frontend:needbackendv1
+          image: nggocnn/frontend:v1
           resources:
             requests:
               memory: '128Mi'
