@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import './View.css'
 import axios from 'axios'
 
 const View = () => {

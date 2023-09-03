@@ -14,15 +14,17 @@ const sequelize = new Sequelize(process.env.MYSQL_DATABASE, null, null, {
   dialect: 'mysql',
   port: process.env.MYSQL_PORT,
   replication: {
-    read: readDatabases.map((db) => ({
-      host: db.host,
-      username: db.username,
-      password: db.password,
-    })),
+    read: [
+      {
+        host: 'database',
+        username: 'root',
+        password: 'password',
+      },
+    ],
     write: {
-      host: writeDatabase.host,
-      username: writeDatabase.username,
-      password: writeDatabase.password,
+      host: 'database',
+      username: 'root',
+      password: 'password',
     },
   },
   pool: {

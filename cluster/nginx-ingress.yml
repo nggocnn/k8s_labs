@@ -16,3 +16,13 @@ spec:
                 port:
                   number: 80
             path: /
+    - host: contact.ngocnn.online
+      http:
+        paths:
+          - pathType: Prefix
+            backend:
+              service:
+                name: backend-cluster-ip
+                port:
+                  number: 5000
+            path: /api

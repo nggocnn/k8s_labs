@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import './AddEdit.css'
 import axios from 'axios'
-import { toast } from 'react-toastify'
 
 const initialState = {
   name: '',
@@ -25,11 +24,9 @@ const AddEdit = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!name || !email || !contact)
-      toast.error('Please provide value in input field', {
-        position: toast.POSITION.TOP_CENTER,
-      })
-    else {
+    if (!name || !email || !contact) {
+      window.alert('Please provide value in input field')
+    } else {
       if (!id) {
         axios
           .post(`/api/post`, {
@@ -40,10 +37,8 @@ const AddEdit = () => {
           .then(() => {
             setState({ name: '', email: '', contact: '' })
           })
-          .catch((err) => toast.error(err.response.data))
-        toast.success('Contact Added Successfully', {
-          position: toast.POSITION.TOP_CENTER,
-        })
+          .catch((err) => window.alert(err.response.data))
+        window.alert('Contact Added Successfully')
       } else {
         axios
           .put(`/api/update/${id}`, {
@@ -54,10 +49,8 @@ const AddEdit = () => {
           .then(() => {
             setState({ name: '', email: '', contact: '' })
           })
-          .catch((err) => toast.error(err.response.data))
-        toast.success('Contact Updated Successfully', {
-          position: toast.POSITION.TOP_CENTER,
-        })
+          .catch((err) => window.alert(err.response.data))
+        window.alert('Contact Updated Successfully')
       }
       setTimeout(() => navigator('/'), 500)
     }
