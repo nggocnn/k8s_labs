@@ -59,17 +59,17 @@ Results:
 
 | NAME                                      | TYPE      | CLUSTER-IP     | EXTERNAL-IP | PORT(S)  | AGE   |
 | ----------------------------------------- | --------- | -------------- | ----------- | -------- | ----- |
-| service/mysql-database-primary            | ClusterIP | 34.118.232.107 | <none>      | 3306/TCP | 8m47s |
-| service/mysql-database-primary-headless   | ClusterIP | None           | <none>      | 3306/TCP | 8m47s |
-| service/mysql-database-secondary          | ClusterIP | 34.118.238.82  | <none>      | 3306/TCP | 8m47s |
-| service/mysql-database-secondary-headless | ClusterIP | None           | <none>      | 3306/TCP | 8m47s |
+| service/mysql-database-primary            | ClusterIP | 34.118.232.107 |             | 3306/TCP | 8m47s |
+| service/mysql-database-primary-headless   | ClusterIP | None           |             | 3306/TCP | 8m47s |
+| service/mysql-database-secondary          | ClusterIP | 34.118.238.82  |             | 3306/TCP | 8m47s |
+| service/mysql-database-secondary-headless | ClusterIP | None           |             | 3306/TCP | 8m47s |
 
 | NAME                                      | READY | AGE   |
 | ----------------------------------------- | ----- | ----- |
 | statefulset.apps/mysql-database-primary   | 1/1   | 8m47s |
 | statefulset.apps/mysql-database-secondary | 2/2   | 8m47s |
 
-Then we can connect backend to database using these headless services
+Then we can connect backend to database using these services
 
 - Primary (read/write): `mysql-database-primary.default.svc.cluster.local`
 - Secondary (read-only): `mysql-database-secondary.default.svc.cluster.local`
@@ -80,7 +80,18 @@ Then we can connect backend to database using these headless services
 
     kubectl apply -f backend-configmap.yml
 
-Declare ConfigMap `backend-config` and Secret `mysql-database` in backend-deployment
+```yaml
+BACKEND_PORT: '5000'
+DB_PORT: '3306'
+APP_DATABASE: 'contacts'
+DB_POOL_MAX: '20'
+DB_POOL_IDLE: '30000'
+PRIMARY_DB_HOST: 'mysql-database-primary.default.svc.cluster.local'
+SECONDARY_DB_HOST: 'mysql-database-secondary.default.svc.cluster.local'
+DB_USERNAME: 'root'
+```
+
+Declare ConfigMap `backend-config` and Secret `mysql-database` (created by bitnami/mysql helm chart) in backend-deployment
 
 ```yaml
 envFrom:
@@ -102,7 +113,7 @@ env:
 
     kubectl apply -f backend-service.yml
 
-## 3. Deploy fontend servers
+## 3. Deploy frontend servers
 
 ### Create `frontend-deployment`
 
